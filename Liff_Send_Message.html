@@ -19,12 +19,12 @@
 	 <div class="form-group">
 	  <textarea class="form-control" id="FlexText" placeholder="ใส่ข้อความตรงนี้" style="height: 200px;font-size: 20px;"></textarea>
 	 </div>
-    </form>
-    <div class="buttongroup">
+        </form>
+        <div class="buttongroup">
 	 <div class="buttonrow" style="text-align: center;">
 	  <button class="btn btn-success" id="flexmessagereply">ส่งข้อความ Flex</button>
 	 </div>
-    </div>
+        </div>
 	<script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
 		<script>
 			document.title = "ส่งข้อความ flex ตอบกลับ ไปยังเพื่อน,กลุ่ม";
@@ -64,12 +64,12 @@
 			   if(sText==undefined||sText==""){
 				var sText = document.getElementById('FlexText').value;
 			   }
-			   var cContents = Box_Flex_Message(sText);
+			   var cContents = Box_FlexCenter(sText);
 			   //console.log(JSON.stringify(cContents));
 			   if (liff.isLoggedIn()) {
 				var groupInfo = liff.getContext();
 				var sGroupId = JSON.stringify(groupInfo);
-				//console.log(sGroupId);
+				console.log(sGroupId);
 				var bGroupInfo = groupInfo.squareId;
 				if (bGroupInfo != null) {
 				 liff.sendMessages([
@@ -78,11 +78,25 @@
 				  liff.closeWindow();
 				 });
 				} else {
-				 liff.shareTargetPicker([
-				  cContents
-				 ]).then(function (){
-				  liff.closeWindow();
-				 });
+				 if(liff.isInClient()){
+				  liff.sendMessages([
+				   cContents
+				  ]).then(function (){
+				   liff.closeWindow();
+				  });
+				 }else{
+				  if(liff.isApiAvailable('shareTargetPicker')){
+				   liff.shareTargetPicker([
+					cContents
+				   ]);
+				  }else{
+				   liff.sendMessages([
+					cContents
+				   ]).then(function (){
+					liff.closeWindow();
+				   });
+				  }
+				 }
 				}
 			   } else {
 				window.alert('Message Not Sent, Please Login');
